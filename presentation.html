@@ -132,7 +132,7 @@ All responses are stacked in the vector `\(\mathbf{y} = (y_{1}, y_{2}, \dots, y_
 
 Linking the observed responses to latent variables `\(\eta_{m}^{(l)}\)` of interest.
 
-`$$\nu_{i} = \sum_{s=1}^{S} f_{s}\left(\mathbf{x}_{i}\right) + \sum_{l=2}^{L}\sum_{m=1}^{M_{l}} \eta_{m}^{(l)} \mathbf{z}^{(l)}_{mi}{}^{'}\boldsymbol{\lambda}_{m}^{(l)}$$`
+`$$E(y_{i}) = g^{-1}(\nu_{i}) = \sum_{s=1}^{S} f_{s}\left(\mathbf{x}_{i}\right) + \sum_{l=2}^{L}\sum_{m=1}^{M_{l}} \eta_{m}^{(l)} \mathbf{z}^{(l)}_{mi}{}^{'}\boldsymbol{\lambda}_{m}^{(l)}$$`
 
 - Hierarchical model with `\(L\)` levels. Each level `\(l\)` has `\(M_{l}\)` latent variables. Factor loadings `\(\boldsymbol{\lambda}_{m}^{(l)}\)` link the latent variables to the observed measurements.
 
@@ -353,6 +353,12 @@ Data from 4196 MRI scans of 1886 participants.
 Research question:
 
   - How does socioeconomic status `\(\eta_{1}^{(2)}\)` interact with the lifespan hippocampal trajectory `\(f(a_{i})\)`?
+  
+--
+  
+  - Conditional effect of age given socioeconomic status `\(\eta_{1}^{(2)}\)` is
+  
+`$$f(a_{i}) + \eta_{1}^{(2)}\left(\lambda_{7} + \lambda_{8}a_{i}\right)$$`
   
 
 
