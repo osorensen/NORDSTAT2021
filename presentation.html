@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Longitudinal modeling of age-dependent latent traits with generalized additive latent and mixed models</title>
+    <title>Generalized additive latent and mixed models</title>
     <meta charset="utf-8" />
     <meta name="author" content="Øystein Sørensen" />
     <script src="libs/header-attrs-2.9/header-attrs.js"></script>
@@ -12,7 +12,7 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Longitudinal modeling of age-dependent latent traits with generalized additive latent and mixed models
+# Generalized additive latent and mixed models
 ### Øystein Sørensen
 ### Center for Lifespan Changes in Brain and Cognition</br>University of Oslo
 ### NORDSTAT2021
@@ -24,21 +24,17 @@ class: inverse, middle, center
 
 # Introduction
 
----
 
-&lt;img src="figures/paper_header.png"&gt;
-
-.footnote[https://arxiv.org/abs/2105.02488]
 
 ---
 
 # Latent Variable Models
 
-Multiple observations measure a latent trait, e.g.
+In psychology and social science, you often have multiple observations measuring a latent trait of interest, e.g.
 
 - Cognitive abilities follow from responses to different tests.
 
-- Attitudes measured by responses to survey questions.
+- Attitudes defined by survey responses.
 
 Classical tools
 
@@ -47,41 +43,38 @@ Classical tools
   - Item response theory
   
   - Structural equation models.
+  
+--
+
+Restrictive!!
+
+  - Parametric
+  
+  - Require balanced longitudinal data
+  
+  - Don't easily allow covariates and multilevel data
 
 
 ---
 
-# Lifespan variation is smooth and nonlinear
-Parametric models not well suited to capture such curves.
-.pull-left[
-&lt;h3&gt;Brain regions&lt;/h3&gt;
+# Example
 
-  &lt;img src="figures/lifespan_curves.jpeg"&gt;
-  ]
-.pull-right[
-&lt;h3&gt;Cognitive abilities&lt;/h3&gt;
-
-&lt;img src="figures/smooth_cog.png"&gt;
-
-]
-
-
----
-
-# Semiparametric Latent Variable Models
-
-Example: California verbal learning test of episodic memory
+California verbal learning test of episodic memory
 
   - Five trials at a single test session.
   
   - Latent episodic memory seems to depend smoothly on age.
+  
+  - Both between- and within-session learning effect
+  
+  - Irregular time intervals
   
 
 &lt;center&gt;
 &lt;img src="figures/cvlt_sample_plot.png", width=700&gt;
 &lt;/center&gt;
 
-Question: How does latent episodic memory vary across the lifespan?
+
 
 ---
 
@@ -120,9 +113,6 @@ Elementary units of observation distributed according to an exponential family.
 
 `$$f\left(y_{i} | \theta_{i}, \phi\right) = \exp\left\{\frac{y_{i}\theta_{i} - b\left(\theta_{i}\right)}{\phi} + c\left(y_{i}, \phi\right)  \right\}$$`
 
-
-
-
 All responses are stacked in the vector `\(\mathbf{y} = (y_{1}, y_{2}, \dots, y_{n})'\)`. Often the responses can be of completely different types, so dummy variables are used extensively in the regression models.
 
 
@@ -132,7 +122,7 @@ All responses are stacked in the vector `\(\mathbf{y} = (y_{1}, y_{2}, \dots, y_
 
 Linking the observed responses to latent variables `\(\eta_{m}^{(l)}\)` of interest.
 
-`$$E(y_{i}) = g^{-1}(\nu_{i}) = \sum_{s=1}^{S} f_{s}\left(\mathbf{x}_{i}\right) + \sum_{l=2}^{L}\sum_{m=1}^{M_{l}} \eta_{m}^{(l)} \mathbf{z}^{(l)}_{mi}{}^{'}\boldsymbol{\lambda}_{m}^{(l)}$$`
+`$$g\left\{E(y_{i})\right\} = \nu_{i} = \sum_{s=1}^{S} f_{s}\left(\mathbf{x}_{i}\right) + \sum_{l=2}^{L}\sum_{m=1}^{M_{l}} \eta_{m}^{(l)} \mathbf{z}^{(l)}_{mi}{}^{'}\boldsymbol{\lambda}_{m}^{(l)}$$`
 
 - Hierarchical model with `\(L\)` levels. Each level `\(l\)` has `\(M_{l}\)` latent variables. Factor loadings `\(\boldsymbol{\lambda}_{m}^{(l)}\)` link the latent variables to the observed measurements.
 
@@ -169,18 +159,18 @@ Structural model
 
 # Mixed Model Representation
 
-- Spline smoothing mathematically equivalent to fitting mixed models &lt;sup&gt;1&lt;/sup&gt;.
+- Through a series of transformations, we show that GALAMMs with `\(L\)` are equivalent to nonlinear mixed models with `\(L+1\)` levels, with linear predictor
 
-- Lets us represent GALAMM as a nonlinear mixed model
+`$$\nu = f\left(X, \beta\right) + Z\left(\beta\right) \eta, ~~~ \eta \sim N(0, \Psi)$$`
 
-`$$E\left(y\right) = g^{-1}\left(\nu\right) = f\left(X, \beta\right) + Z\left(\beta\right) \eta, ~~~ \eta \sim N(0, \Psi)$$`
+- Importantly, the mixed model representation does the spline smoothing&lt;sup&gt;1&lt;/sup&gt;.
 
 - Can fit it with a profile likelihood approach, utilizing efficient mixed model software (`lme4`/`nlme`).
 
 - We use this to derive asymptotic covariance matrices for all functions and parameters.
 
 
-.footnote[[1] Dating back to [Kimeldorf and Wahba (1970)](https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-41/issue-2/A-Correspondence-Between-Bayesian-Estimation-on-Stochastic-Processes-and-Smoothing/10.1214/aoms/1177697089.full).]
+.footnote[[1] Following [Kimeldorf and Wahba (1970)](https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-41/issue-2/A-Correspondence-Between-Bayesian-Estimation-on-Stochastic-Processes-and-Smoothing/10.1214/aoms/1177697089.full).]
 
 
 
@@ -241,9 +231,11 @@ h\left(w_{jk}\right) \\
 
 For a given participant:
 
-- `\(\eta_{jk}^{(2)}\)` is the latent level of episodic memory at a given timepoint. It consists of a smooth function of age and a random intercept across tests at the given timepoint.
+- `\(\eta_{jk}^{(2)}\)` is the latent level of episodic memory at a given timepoint.
 
 - `\(\eta_{k}^{(3)}\)` is the random intercept of episodic memory across timepoints.
+
+- `\(h(w_{jk})\)` subject to penalty `\(\gamma \int \{h''(u)\}^{2}  \text{d}u\)`
 
 ---
 
@@ -253,7 +245,9 @@ Reduced form model
 
 `$$\nu_{i} = \mathbf{d}_{ti}'\boldsymbol{\beta}_{t} + d_{ri}\beta_{r} + h\left(w_{jk}\right) \mathbf{d}_{ti}'\boldsymbol{\lambda} + \zeta_{jk}^{(2)}\mathbf{d}_{ti}'\boldsymbol{\lambda} + \zeta_{k}^{(3)} \mathbf{d}_{ti}'\boldsymbol{\lambda}$$`
 
-is actually a nonlinear mixed model.
+is actually a nonlinear mixed model with 4 hierarchical levels.
+
+Fourth level is the smoothing.
 
 
 ---
@@ -282,10 +276,11 @@ Some results, based on 3470 timepoints for 1850 participants between 6 and 93 ye
 
 # Episodic and Working Memory
 
-Important question in cognitive neuroscience: 
+Multivariate questions are more interesting:
 
 - How is change in cognitive performance correlated across cognitive domains?
 
+--
 
 We extended the previous model to a factor-by-curve model, with some items measuring working memory and others measuring episodic memory.
 
@@ -312,9 +307,9 @@ class: inverse, middle, center
 
 # Socioeconomic Status and Hippocampus
 
-- Hippocampus is a brain region which plays an important role in memory consolidation, and is one of the first regions to be damaged in Alzheimer's disease. 
+- Hippocampus: important brain region. One of the to be damaged in Alzheimer's disease. 
 
-- It has been suggested that low socioeconomic status is bad for development of the hippocampus, and hence is a risk factor for dementia.
+- Has been suggested that low socioeconomic status is bad for development of the hippocampus, and hence is a risk factor for dementia.
 
 .pull-left[
   ![](figures/mri_scanner.jpg)
@@ -385,7 +380,7 @@ class: inverse, middle, center
 
 # Summary
 
-- Generalized additive latent and mixed models allow multilevel latent variable modeling when the latent variables themselves depends smoothly on one or more observed covariates.
+- Generalized additive latent and mixed models allow multilevel latent variable modeling when the latent variables depend smoothly on one or more observed covariates.
 
   - R package: https://github.com/LCBC-UiO/galamm
   
@@ -393,9 +388,9 @@ class: inverse, middle, center
 
 - Further work
 
-  - Develop faster algorithms tailored to typical applications, which also allow mixed response types.
+  - Faster algorithms for integration the latent variable distribution.
   
-  - All smooth functions to depend on latent variables.
+  - Allow smooth functions to depend on latent variables.
 
 
 ---
